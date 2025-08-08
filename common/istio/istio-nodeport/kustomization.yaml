@@ -1,8 +1,27 @@
 resources:
   - ../istio-crds/base
   - ../istio-namespace/base
-  - ../istio-install/base
   - ../istio-install/overlays/oauth2-proxy
 
-patchesStrategicMerge:
-  - svc-istio-ingressgateway-nodeport.yaml
+patches:
+  - target:
+      version: v1
+      kind: Service
+      name: istio-ingressgateway
+      namespace: istio-system
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: NodePort
+      - op: add
+        path: /spec/externalTrafficPolicy
+        value: Local
+      - op: replace
+        path: /spec/ports/0/nodePort
+        value: 31021     # status(15021)
+      - op: replace
+        path: /spec/ports/1/nodePort
+        value: 30080     # http(-> targetPort 8080일 가능성 높음)
+      - op: replace
+        path: /spec/ports/2/nodePort
+        value: 30443     # https(-> targetPort 8443일 가능성 높음)
