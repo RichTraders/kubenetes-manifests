@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local   # 클라이언트 IP 보존(원하면 Cluster로)
+  ports:
+    - name: status-port
+      port: 15021
+      targetPort: 15021
+      nodePort: 31021
+    - name: http2
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
+    - name: https
+      port: 443
+      targetPort: 8443
+      nodePort: 30443
