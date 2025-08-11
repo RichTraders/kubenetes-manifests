@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cni-conflist-writer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: cni-conflist-writer
+  template:
+    metadata:
+      labels:
+        app: cni-conflist-writer
+    spec:
+      priorityClassName: system-node-critical
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: writer
+          image: busybox:1.36
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: host-cni
+              mountPath: /host/etc/cni/net.d
+            - name: conf
+              mountPath: /config
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              SRC=/config/10-flannel.conflist
+              DST=/host/etc/cni/net.d/10-flannel.conflist
+              TMP=/host/etc/cni/net.d/.10-flannel.conflist.tmp
+              install -m 0644 "$SRC" "$TMP"
+              mv -f "$TMP" "$DST"
+              # 변경 감지 후 주기적 동기화
+              while true; do
+                if ! cmp -s "$SRC" "$DST"; then
+                  echo "[writer] updating $DST"
+                  install -m 0644 "$SRC" "$TMP" && mv -f "$TMP" "$DST"
+                fi
+                sleep 30
+              done
+      volumes:
+        - name: host-cni
+          hostPath:
+            path: /etc/cni/net.d
+            type: Directory
+        - name: conf
+          configMap:
+            name: cni-conflist
+            items:
+              - key: 10-flannel.conflist
+                path: 10-flannel.conflist

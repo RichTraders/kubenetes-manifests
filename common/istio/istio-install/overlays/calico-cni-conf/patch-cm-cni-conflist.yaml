@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cni-conflist
+  namespace: kube-system
+data:
+  10-flannel.conflist: |-
+    {
+      "cniVersion": "0.3.1",
+      "name": "k8s-pod-network",
+      "plugins": [
+        { "type": "istio-cni", "log_level": "info", "exclude_namespaces": ["kube-system"] },
+        { "type": "flannel",
+          "delegate": {
+            "hairpinMode": true,
+            "isDefaultGateway": true
+          }
+        },
+        { "type": "portmap",   "capabilities": { "portMappings": true } },
+        { "type": "bandwidth", "capabilities": { "bandwidth": true } }
+      ]
+    }
