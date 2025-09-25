@@ -25,5 +25,7 @@ spec:
                 values:
                   - istio-system
         - podSelector: {} # allow all pods from the same namespace
+        - ipBlock:
+            cidr: 0.0.0.0/0
   policyTypes:
     - Ingress
