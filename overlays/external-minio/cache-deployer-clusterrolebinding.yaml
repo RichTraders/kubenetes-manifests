@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kfp-cache-deployer-crb
+subjects:
+  - kind: ServiceAccount
+    name: kubeflow-pipelines-cache-deployer-sa
+    namespace: kubeflow
+roleRef:
+  kind: ClusterRole
+  name: kfp-cache-deployer-clusterrole
+  apiGroup: rbac.authorization.k8s.io

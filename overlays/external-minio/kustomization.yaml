@@ -8,6 +8,9 @@ resources:
 
 resources:
   - minio-service-alias.yaml
+  - cache-deployer-sa.yaml
+  - cache-deployer-clusterrole.yaml
+  - cache-deployer-clusterrolebinding.yaml
 
 patchesStrategicMerge:
   - workflow-controller-configmap-patch.yaml
