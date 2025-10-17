@@ -1,0 +1,1 @@
+kustomize build overlays/external-minio | kubectl apply -f -

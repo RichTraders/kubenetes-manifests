@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kubeflow
+
+resources:
+  - ../../applications/pipeline/upstream/base/installs/generic
+  - ../../applications/pipeline/upstream/third-party/argo/base
+
+resources:
+  - minio-service-alias.yaml
+
+patchesStrategicMerge:
+  - workflow-controller-configmap-patch.yaml
+  - pipeline-install-config-patch.yaml
+  - ml-pipeline-deploy-patch.yaml
+
+
+# (Istio 사용 시) 외부 egress 허용
+# resources:
+#   - istio-minio-egress.yaml

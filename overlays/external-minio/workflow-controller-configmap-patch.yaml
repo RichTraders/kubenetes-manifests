@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-controller-configmap
+    #namespace: kubeflow
+data:
+  artifactRepository: |
+    archiveLogs: true
+    s3:
+      endpoint: "minio.minio.svc.cluster.local:9000"
+      bucket: "$(kfp-artifact-bucket-name)"
+      insecure: false
+        #s3ForcePathStyle: true
+      region: "us-east-1"
+      accessKeySecret:
+        name: mlpipeline-minio-artifact
+        key: accesskey
+      secretKeySecret:
+        name: mlpipeline-minio-artifact
+        key: secretkey
+  executor: |
+    imagePullPolicy: IfNotPresent
